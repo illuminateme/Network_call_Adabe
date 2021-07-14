@@ -2,6 +2,9 @@ package live.adabe.networkcall.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import live.adabe.networkcall.api.RetrofitProvider
 import live.adabe.networkcall.models.User
 import retrofit2.Call
@@ -13,17 +16,8 @@ class MainViewModel : ViewModel() {
     val usersLiveData = MutableLiveData<List<User>>()
 
     fun getUsers(){
-        RetrofitProvider.placeHolderAPI.getUsers().enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                response.body()?.let {
-                    usersLiveData.postValue(it)
-                }
-            }
-
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-
-            }
-
-        })
+        CoroutineScope(Dispatchers.IO).launch {
+            usersLiveData.postValue(RetrofitProvider.placeHolderAPI.getUsers())
+        }
     }
 }
